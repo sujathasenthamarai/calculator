@@ -1,0 +1,145 @@
+<html lang="en">
+<head>
+   <title>Calculator-Express</title>
+   <link rel="stylesheet" href="style.css">
+</head>
+<body>
+   <div id="calculator">
+      <div id="cont">
+         <form action="/" method="POST">
+            <div id="output1">
+               <input type="text" id='output' placeholder="0" name="result">
+            </div>
+            <div class="btn">
+                <input type="button" value='1' onclick="Solve(1)">
+                <input type="button" value='2' onclick="Solve(2)">
+                <input type="button" value='3' onclick="Solve(3)">
+                <input type="button" value='+' onclick="Solve('+')">
+                <br>
+               <input type="button" value='4' onclick="Solve(4)">
+               <input type="button" value='5' onclick="Solve(5)">
+               <input type="button" value='6' onclick="Solve(6)">
+               <input type="button" value='-' onclick="Solve('-')">
+               <br>
+               <input type="button" value='7' onclick="Solve(7)">
+               <input type="button" value='8' onclick="Solve(8)">
+               <input type="button" value='9' onclick="Solve(9)">
+               <input type="button" value='x' onclick="Solve('*')">
+               <br>
+               <input type="button" value='00' onclick="Solve('00')">
+               <input type="button" value='0' onclick="Solve(0)">
+               <input type="button" value='.' onclick="Solve('.')">
+               <input type="submit" value='=' onclick="sum()">
+               <br>
+               <input type="button" value='C' onclick="Clear()" id="clear">
+               <input type="button" value='←' onclick="Back()" id="backspace">
+               <input type="button" value='%' onclick="Solve('%')">
+               <input type="button" value='/' onclick="Solve('/')">
+            </div>
+         </form>
+      </div>
+   </div>
+   <script>
+      var first_val="";
+      var second_val="";
+      var opr="";
+      
+        fetch('/result')
+           .then(response => response.json())
+           .then(obj => 
+           {
+            document.getElementById("output").value=obj.result;
+            console.log(obj);first_val=obj.result});
+
+        function Clear()
+        {
+           first_val="";
+           second_val="";
+           opr="";
+           document.getElementById("output").value="";
+        }
+        function Back()
+        {
+          let delval=document.getElementById("output").value;
+          document.getElementById("output").value=delval.slice(0,delval.length-1);
+          first_val=document.getElementById("output").value;
+          opr="";
+       
+        }
+
+      function sum(){
+          var sum=0;
+               
+          switch(opr){
+              case '+' : sum=parseFloat(first_val) + parseFloat(second_val);
+                         
+                         break;
+              case '-' : sum=parseFloat(first_val) - parseFloat(second_val);
+                          
+                          break;
+              case '*' : sum=parseFloat(first_val) * parseFloat(second_val);
+                         
+                          break;    
+              case '/' : sum=parseFloat(first_val) / parseFloat(second_val);                 
+                          break;                
+                      }
+          first_val=sum;
+          second_val="";
+          opr="";
+          document.getElementById("output").value=sum;
+      
+      }
+
+      function Solve(val)
+      {
+          if(document.getElementById("output").value==0 || document.getElementById("output").value=='NaN')
+            {
+                Clear();
+            }
+        if (val != '+' && val != '-' && val != '%' && val !='*' && val !='/' && val != '--')
+        {
+          if (opr==""){
+        first_val +=val;
+          }else{
+           second_val +=val;
+        }
+        document.getElementById("output").value +=val;
+        }else{            
+           
+          if(val=='--'){
+              if (opr==""){
+        first_val = first_val * (-1);
+        document.getElementById("output").value = `(${first_val})`;
+          }else{
+           second_val *=-1;
+           document.getElementById("output").value = first_val + opr + `(${second_val})`;
+        }
+          }else{
+            
+              if(val=='%'){
+
+                  if (opr==""){
+        first_val = first_val / 100;
+        document.getElementById("output").value = `(${first_val})`;
+          }else{
+           second_val =(second_val*first_val)/100;
+           document.getElementById("output").value = first_val + opr + `(${second_val})`;
+           sum();
+        }  
+              }else{
+
+          if (opr!=""){
+              sum();
+          }
+          opr=val;
+          if(document.getElementById("output").value!='NaN'){
+          document.getElementById("output").value +=val;
+          }
+             }
+              }
+        }
+      }
+  
+  </script>
+</body>
+</html>
